@@ -2,47 +2,48 @@ package org.example.htmlgen;
 
 /**
  * Clasa client (Client).
- * Demonstrează utilizarea pattern-ului Composite pentru a construi o structură HTML.
- * Similar cu Main.java din exemplul tău.
+ * Acum construiește arborele folosind clasele concrete corecte
+ * (HtmlBlockElement vs HtmlInlineElement).
  */
 public class Main {
     public static void main(String[] args) {
 
         // --- Construim arborele HTML ---
+        // Clientul decide tipul de element:
 
-        // Rădăcina <html>
-        HtmlElement html = new HtmlElement("html");
+        // Rădăcina <html> (block)
+        BaseHtmlElement html = new HtmlBlockElement("html", "");
 
-        // <head>
-        HtmlElement head = new HtmlElement("head");
-        HtmlElement title = new HtmlElement("title");
+        // <head> (block)
+        BaseHtmlElement head = new HtmlBlockElement("head", "");
+        BaseHtmlElement title = new HtmlInlineElement("title", ""); // <title> e inline
         title.addChild(new HtmlTextNode("Pagina Mea de Export"));
         head.addChild(title);
         html.addChild(head);
 
-        // <body>
-        HtmlElement body = new HtmlElement("body");
+        // <body> (block)
+        BaseHtmlElement body = new HtmlBlockElement("body", "");
 
-        // <h1>
-        HtmlElement h1 = new HtmlElement("h1");
+        // <h1> (inline)
+        BaseHtmlElement h1 = new HtmlInlineElement("h1", "");
         h1.addChild(new HtmlTextNode("Raport Măsurători"));
         body.addChild(h1);
 
-        // <div> pentru conținut
-        HtmlElement div = new HtmlElement("div", "id='container'");
+        // <div> (block)
+        BaseHtmlElement div = new HtmlBlockElement("div", "id='container'");
 
-        // <p> (Paragraf simplu - exemplu convertor Word)
-        HtmlElement p1 = new HtmlElement("p");
+        // <p> (inline)
+        BaseHtmlElement p1 = new HtmlInlineElement("p", "");
         p1.addChild(new HtmlTextNode("Acesta este un paragraf extras dintr-un document."));
         div.addChild(p1);
 
-        // <p> (Paragraf cu <b> și <br> - exemplu complex)
-        HtmlElement p2 = new HtmlElement("p");
+        // <p> (inline)
+        BaseHtmlElement p2 = new HtmlInlineElement("p", "");
         p2.addChild(new HtmlTextNode("Datele evidențiate sunt "));
 
-        HtmlElement bTag = new HtmlElement("b"); // <b>
-        bTag.addChild(new HtmlTextNode("foarte importante")); // <b>text</b>
-        p2.addChild(bTag); // <p>...<b>...</b>
+        BaseHtmlElement bTag = new HtmlInlineElement("b", ""); // <b> (inline)
+        bTag.addChild(new HtmlTextNode("foarte importante"));
+        p2.addChild(bTag);
 
         p2.addChild(new HtmlTextNode("."));
         p2.addChild(new HtmlSelfClosingTag("br", "")); // <br>
@@ -56,9 +57,10 @@ public class Main {
         html.addChild(body);
 
         // --- Generăm și afișăm HTML-ul final ---
-        // Acesta este "exportul" în consolă.
-        // Pentru a salva într-un fișier, ai folosi un FileWriter.
-        String finalHtml = html.generateHtml(0); // Începem de la nivelul 0
+        // Aici se întâmplă magia Polimorfismului!
+        // Când apelăm html.generateHtml(0), fiecare copil va apela
+        // PROPRIA sa versiune a metodei.
+        String finalHtml = html.generateHtml(0);
 
         System.out.println("--- Început Export HTML ---");
         System.out.println(finalHtml);
