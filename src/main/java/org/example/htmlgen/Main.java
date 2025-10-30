@@ -2,46 +2,40 @@ package org.example.htmlgen;
 
 /**
  * Clasa client (Client).
- * Acum construiește arborele folosind clasele concrete corecte
- * (HtmlBlockElement vs HtmlInlineElement).
+ * Demonstrează cum se construiește arborele HTML folosind clasele
+ * specifice (Block vs Inline), bazate pe pattern-ul Composite.
  */
 public class Main {
     public static void main(String[] args) {
 
         // --- Construim arborele HTML ---
-        // Clientul decide tipul de element:
+        // Clientul (acest cod) are responsabilitatea de a alege
+        // implementarea corectă (Block vs Inline) pentru fiecare tag.
 
-        // Rădăcina <html> (block)
-        BaseHtmlElement html = new HtmlBlockElement("html", "");
+        BaseHtmlElement html = new HtmlBlockElement("html", ""); // <html>
 
-        // <head> (block)
-        BaseHtmlElement head = new HtmlBlockElement("head", "");
-        BaseHtmlElement title = new HtmlInlineElement("title", ""); // <title> e inline
+        BaseHtmlElement head = new HtmlBlockElement("head", ""); // <head>
+        BaseHtmlElement title = new HtmlInlineElement("title", ""); // <title>
         title.addChild(new HtmlTextNode("Pagina Mea de Export"));
         head.addChild(title);
         html.addChild(head);
 
-        // <body> (block)
-        BaseHtmlElement body = new HtmlBlockElement("body", "");
+        BaseHtmlElement body = new HtmlBlockElement("body", ""); // <body>
 
-        // <h1> (inline)
-        BaseHtmlElement h1 = new HtmlInlineElement("h1", "");
+        BaseHtmlElement h1 = new HtmlInlineElement("h1", ""); // <h1>
         h1.addChild(new HtmlTextNode("Raport Măsurători"));
         body.addChild(h1);
 
-        // <div> (block)
-        BaseHtmlElement div = new HtmlBlockElement("div", "id='container'");
+        BaseHtmlElement div = new HtmlBlockElement("div", "id='container'"); // <div>
 
-        // <p> (inline)
-        BaseHtmlElement p1 = new HtmlInlineElement("p", "");
+        BaseHtmlElement p1 = new HtmlInlineElement("p", ""); // <p>
         p1.addChild(new HtmlTextNode("Acesta este un paragraf extras dintr-un document."));
         div.addChild(p1);
 
-        // <p> (inline)
-        BaseHtmlElement p2 = new HtmlInlineElement("p", "");
+        BaseHtmlElement p2 = new HtmlInlineElement("p", ""); // <p>
         p2.addChild(new HtmlTextNode("Datele evidențiate sunt "));
 
-        BaseHtmlElement bTag = new HtmlInlineElement("b", ""); // <b> (inline)
+        BaseHtmlElement bTag = new HtmlInlineElement("b", ""); // <b>
         bTag.addChild(new HtmlTextNode("foarte importante"));
         p2.addChild(bTag);
 
@@ -50,16 +44,15 @@ public class Main {
         p2.addChild(new HtmlTextNode("Vă rugăm să le analizați."));
         div.addChild(p2);
 
-        // <img> (Tag self-closing - exemplu imagini Word)
+        // <img>
         div.addChild(new HtmlSelfClosingTag("img", "src='grafic.png' alt='Grafic Măsurători'"));
 
         body.addChild(div);
         html.addChild(body);
 
         // --- Generăm și afișăm HTML-ul final ---
-        // Aici se întâmplă magia Polimorfismului!
-        // Când apelăm html.generateHtml(0), fiecare copil va apela
-        // PROPRIA sa versiune a metodei.
+        // Apelul html.generateHtml(0) pornește procesul recursiv
+        // de randare polimorfică.
         String finalHtml = html.generateHtml(0);
 
         System.out.println("--- Început Export HTML ---");

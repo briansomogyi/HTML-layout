@@ -1,9 +1,11 @@
 package org.example.htmlgen;
 
 /**
- * Moștenire & Polimorfism: O altă implementare specifică.
- * Această clasă ȘTIE cum să se randeze ca un element "inline"
- * (ex: <p>, <h1>, <b>).
+ * Moștenire & Polimorfism: O implementare 'Composite' pentru elemente HTML
+ * de tip "inline-container" (ex: <p>, <h1>, <b>).
+ * <p>
+ * Aceste elemente își vor randa copiii pe aceeași linie cu ele,
+ * fără indentare sau noi linii între ei.
  */
 public class HtmlInlineElement extends BaseHtmlElement {
 
@@ -12,14 +14,16 @@ public class HtmlInlineElement extends BaseHtmlElement {
     }
 
     /**
-     * Implementarea Polimorfică a metodei de randare PENTRU elementele inline.
-     * Logica de aici era în ramura "if (isInlineContainer)" din vechiul "if".
+     * Implementarea polimorfică a randării pentru elementele 'inline'.
+     * Gestionează două cazuri:
+     * 1. Nivel < 0: Părintele este tot 'inline', deci se randează fără indentare.
+     * 2. Nivel >= 0: Părintele este 'block', deci se randează cu indentare,
+     * dar copiii săi sunt forțați în modul 'inline' (nivel -1).
      */
     @Override
     public String generateHtml(int indentationLevel) {
-        // Când un element inline este randat de un părinte inline (nivel -1),
-        // rămâne complet pe aceeași linie, fără indentare.
         if (indentationLevel < 0) {
+            // Cazul 1: Randat de un părinte inline
             StringBuilder html = new StringBuilder();
             html.append("<").append(tagName).append(attributes).append(">");
             for (IHtmlNode child : children) {
@@ -29,19 +33,17 @@ public class HtmlInlineElement extends BaseHtmlElement {
             return html.toString();
         }
 
-        // Când un element inline este randat de un părinte block (ex: <p> într-un <div>)
-        // se pune pe linia lui, dar copiii lui sunt puși inline.
+        // Cazul 2: Randat de un părinte block
         String indent = getIndentation(indentationLevel);
         StringBuilder html = new StringBuilder();
 
         html.append(indent).append("<").append(tagName).append(attributes).append(">");
 
-        // Copiii sunt puși inline (nivel -1), fără newline după tag-ul de deschidere
         for (IHtmlNode child : children) {
-            html.append(child.generateHtml(-1)); // Trecem copiii în modul inline
+            html.append(child.generateHtml(-1)); // Forțăm copiii în modul inline
         }
 
-        html.append("</").append(tagName).append(">\n"); // Închidem și dăm newline
+        html.append("</").append(tagName).append(">\n");
         return html.toString();
     }
 }

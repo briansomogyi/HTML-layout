@@ -4,15 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * O clasă de bază abstractă pentru toate elementele HTML care pot avea copii.
- * Implementează logica comună (gestionarea copiilor, atributelor).
+ * Clasă de bază abstractă pentru elementele HTML care pot conține noduri copil.
+ * Gestionează logica comună pentru atribute și managementul copiilor.
  * <p>
  * Abstractizare: Definește un "Element HTML" generic.
  * Encapsulare: Protejează lista de copii și logica de indentare.
  */
 public abstract class BaseHtmlElement implements IHtmlNode {
 
-    // protected pentru a fi accesibile de subclase
     protected String tagName;
     protected String attributes;
     protected List<IHtmlNode> children = new ArrayList<>();
@@ -22,24 +21,31 @@ public abstract class BaseHtmlElement implements IHtmlNode {
         this.attributes = (attributes != null && !attributes.isEmpty()) ? " " + attributes : "";
     }
 
-    // Metodă "final" pentru că subclasele nu ar trebui să suprascrie CUM
-    // se adaugă un copil, ci doar CUM se randează.
+    /**
+     * Adaugă un nod copil (Component, Composite sau Leaf) la acest element.
+     * Metoda este 'final' pentru a asigura consistența.
+     */
     public final void addChild(IHtmlNode node) {
         children.add(node);
     }
 
+    /**
+     * Elimină un nod copil.
+     */
     public final void removeChild(IHtmlNode node) {
         children.remove(node);
     }
 
+    /**
+     * Metodă utilitară pentru a genera un string de indentare.
+     */
     protected String getIndentation(int indentationLevel) {
         return "\t".repeat(Math.max(0, indentationLevel));
     }
 
     /**
-     * Metodă abstractă - forțează subclasele (ex: Block vs Inline)
-     * să implementeze propria logică de randare.
-     * Acesta este punctul cheie pentru Polimorfism.
+     * Forțează subclasele concrete să definească propria logică de randare HTML.
+     * Acesta este punctul central al polimorfismului în acest design.
      */
     @Override
     public abstract String generateHtml(int indentationLevel);

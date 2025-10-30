@@ -1,8 +1,8 @@
 package org.example.htmlgen;
 
 /**
- * Clasa Leaf (Frunză) - Reprezintă tag-uri self-closing (ex: <img>, <br>, <hr>).
- * De asemenea, un nod terminal, ca și clasa File.
+ * Clasa Leaf (Frunză) - Reprezintă tag-uri self-closing (ex: <img>, <br>).
+ * Acestea nu pot avea copii.
  */
 public class HtmlSelfClosingTag implements IHtmlNode {
 
@@ -19,10 +19,10 @@ public class HtmlSelfClosingTag implements IHtmlNode {
         String tag = "<" + tagName + attributes + ">";
 
         if (indentationLevel < 0) {
-            // Mod inline (ex: un <br> în interiorul unui <p>)
+            // Modul inline
             return tag;
         }
-        // Mod block (ex: un <hr> direct în <body>)
+        // Modul block
         String indent = "\t".repeat(Math.max(0, indentationLevel));
         return indent + tag + "\n";
     }
